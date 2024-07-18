@@ -17,7 +17,11 @@ private:
     void writeArithmetic ();
     void writePush ();
     void writePop ();
+    void writeLabel ();
+    void writeGoto ();
+    void writeIfGoto ();
     void writeFormatted (std::string asmKey, std::string arg);
+
 
 private:
     std::ofstream file;

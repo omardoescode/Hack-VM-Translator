@@ -20,14 +20,15 @@ void CodeWriter::write () {
 
         // TODO: Continue Building The remaining options
         auto command_type = parser.getCommandType ();
-        if (command_type == commandType::C_ARITHMETIC)
-            writeArithmetic ();
-        else if (command_type == commandType::C_PUSH)
-            writePush ();
-        else if (command_type == commandType::C_POP)
-            writePop ();
-        else
-            throw Error ("CodeWriter::write: Invalid Command Type");
+        switch (command_type) {
+        case commandType::C_ARITHMETIC: writeArithmetic (); break;
+        case commandType::C_PUSH: writePush (); break;
+        case commandType::C_POP: writePop (); break;
+        case commandType::C_LABEL: writeLabel (); break;
+        case commandType::C_IF: writeIfGoto (); break;
+        case commandType::C_GOTO: writeIfGoto (); break;
+        default: throw Error ("CodeWriter::write: Invalid Command Type");
+        }
     }
 }
 
@@ -80,7 +81,6 @@ void CodeWriter::writePush () {
     }
 }
 void CodeWriter::writePop () {
-
     switch (parser.getSegment ()) {
     case segment::LOCAL:
         writeFormatted ("pop_local", std::to_string (parser.arg2 ()));
@@ -114,6 +114,18 @@ void CodeWriter::writePop () {
 void CodeWriter::writeFormatted (std::string asmKey, std::string arg) {
     const std::string command = asmMap.get_command (asmKey);
     file << std::vformat (command, std::make_format_args (arg));
+}
+void CodeWriter::writeLabel () {
+    std::cout << parser.arg1 () << std::endl;
+    ;
+    writeFormatted ("label", parser.arg1 ());
+}
+
+void CodeWriter::writeGoto () {
+    writeFormatted ("goto", parser.arg1 ());
+}
+void CodeWriter::writeIfGoto () {
+    writeFormatted ("if_goto", parser.arg1 ());
 }
 
 void CodeWriter::close () {
