@@ -101,9 +101,8 @@ commandType Parser::getCommandType () {
 
 //
 std::string Parser::arg1 () {
-    if (commandType () == commandType::C_ARITHMETIC) {
+    if (getCommandType () == commandType::C_ARITHMETIC)
         return current_command[0];
-    }
     return current_command[1];
 }
 int Parser::arg2 () {
