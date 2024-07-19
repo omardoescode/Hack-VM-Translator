@@ -1,4 +1,6 @@
+#include "Error.h"
 #include "Translator.h"
+#include <filesystem>
 #include <iostream>
 int main (int argc, char* argv[]) {
     if (argc == 1) {
@@ -6,15 +8,11 @@ int main (int argc, char* argv[]) {
         return -1;
     }
 
-    std::string inp = argv[1], out;
-    if (argc == 3)
-        out = argv[3];
-    else
-        out = inp.substr (0, inp.size () - 3) + ".asm";
+    std::filesystem::path inp (argv[1]);
 
-    Translator translator (inp, out);
+    Translator translator (inp);
 
-    std::cout << "-- Translating to " << out << "\n";
+    std::cout << "-- Translating to " << translator.get_out_file_name () << "\n";
     translator.translate ();
 
     return 0;

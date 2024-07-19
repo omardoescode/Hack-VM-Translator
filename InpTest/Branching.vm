@@ -1,0 +1,49 @@
+// Push constants onto the stack
+push constant 10  // Push 10 onto the stack
+push constant 20  // Push 20 onto the stack
+
+// Perform arithmetic operations
+add               // Add the top two values (10 + 20) => stack: [30]
+push constant 5   // Push 5 onto the stack
+sub               // Subtract the top value from the next (30 - 5) => stack: [25]
+
+// Logical operations
+push constant 0   // Push 0 (false) onto the stack
+push constant -1  // Push -1 (true) onto the stack
+and               // Perform AND operation (0 AND -1) => stack: [0]
+push constant 1   // Push 1 onto the stack
+or                // Perform OR operation (0 OR 1) => stack: [1]
+
+// Comparison operations
+push constant 10  // Push 10 onto the stack
+push constant 20  // Push 20 onto the stack
+gt                // Check if 10 > 20 => stack: [0] (false)
+push constant 30  // Push 30 onto the stack
+push constant 20  // Push 20 onto the stack
+lt                // Check if 30 < 20 => stack: [0] (false)
+push constant 15  // Push 15 onto the stack
+push constant 15  // Push 15 onto the stack
+eq                // Check if 15 == 15 => stack: [1] (true)
+
+// Push and pop to/from local segment
+push constant 300 // Push 300 onto the stack
+pop local 0       // Pop the top value into local[0]
+push local 0      // Push local[0] back onto the stack
+
+// if-goto statement
+push constant 0   // Push 0 (false) onto the stack
+if-goto FALSE_LABEL // This will not jump because the top value is 0
+push constant 1   // Push 1 (true) onto the stack
+if-goto TRUE_LABEL  // This will jump because the top value is 1
+
+// False label (will be skipped)
+label FALSE_LABEL
+push constant 999 // Push 999 onto the stack (this should not happen)
+
+// True label (will be executed)
+label TRUE_LABEL
+push constant 100 // Push 100 onto the stack
+
+// End of program
+label END
+

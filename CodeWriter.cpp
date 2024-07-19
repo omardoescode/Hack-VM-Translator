@@ -116,8 +116,6 @@ void CodeWriter::writeFormatted (std::string asmKey, std::string arg) {
     file << std::vformat (command, std::make_format_args (arg));
 }
 void CodeWriter::writeLabel () {
-    std::cout << parser.arg1 () << std::endl;
-    ;
     writeFormatted ("label", parser.arg1 ());
 }
 
