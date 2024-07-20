@@ -41,7 +41,7 @@ M=D
 D=M
 @SP
 AM=M+1
-A=A-A1
+A=A-1
 M=D
 
 // Update ARG Value
@@ -62,7 +62,7 @@ M=M
 
 // JUMP to function unconditionally
 @{2}
-0; JMP
+0;JMP
 
 ({0}) // A label to come back to later
 

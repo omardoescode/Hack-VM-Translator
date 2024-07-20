@@ -11,7 +11,7 @@ public:
 
     void write ();
 
-    // Writes the bootstrap assembly instruction that effect het bootstrap code tah tinitialzies the VM. This code must be placed at the beginning of the .asm file
+    // Writes the bootstrap assembly instruction that effect the bootstrap code that initializes the VM. This code must be placed at the beginning of the .asm file
     void writeInit ();
 
     void close ();
