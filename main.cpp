@@ -1,10 +1,9 @@
-#include "Error.h"
 #include "Translator.h"
 #include <filesystem>
 #include <iostream>
 int main (int argc, char* argv[]) {
     if (argc == 1) {
-        std::cout << "Invalid Input to the file";
+        std::cerr << "Invalid Input to the file";
         return -1;
     }
 

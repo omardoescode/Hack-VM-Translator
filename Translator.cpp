@@ -2,6 +2,7 @@
 #include "CodeWriter.h"
 #include "Error.h"
 #include <filesystem>
+#include <iostream>
 
 Translator::Translator (std::string inp_files)
 : inp_files (inp_files), asmMap ("Data/") {
@@ -36,9 +37,9 @@ void Translator::translate_files () {
     std::filesystem::path out_path = out_files, in_path = inp_files;
     CodeWriter codeWriter (out_path, asmMap);
 
-    for (const auto& entry : std::filesystem::recursive_directory_iterator (inp_files)) {
-        auto path = entry.path ().stem ().string ();
-        if (path.substr (path.find_last_of (".") + 1) != "vm")
+    for (const std::filesystem::path& entry :
+    std::filesystem::recursive_directory_iterator (inp_files)) {
+        if (entry.extension () != ".vm")
             continue;
 
         Parser parser (entry);

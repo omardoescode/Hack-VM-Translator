@@ -11,6 +11,9 @@ public:
 
     void write ();
 
+    // Writes the bootstrap assembly instruction that effect het bootstrap code tah tinitialzies the VM. This code must be placed at the beginning of the .asm file
+    void writeInit ();
+
     void close ();
 
 private:
@@ -20,7 +23,14 @@ private:
     void writeLabel ();
     void writeGoto ();
     void writeIfGoto ();
-    void writeFormatted (std::string asmKey, std::string arg);
+    void writeCall ();
+    void writeFunction ();
+    void writeReturn ();
+
+
+    template <typename... Args>
+    void writeFormatted (const std::string& asmKey, Args&&... args);
+    void writeFormatted (const std::string& asmKey, std::string args);
 
 
 private:
@@ -30,4 +40,9 @@ private:
     int line;
     Parser parser;
     AssemblyMap asmMap;
+    bool has_initialized;
+
+    // Function Parameters
+    std::string current_function_name;
+    int call_count;
 };

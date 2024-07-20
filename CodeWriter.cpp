@@ -3,8 +3,9 @@
 #include "enums.h"
 #include <format>
 #include <iostream>
+#include <string>
 CodeWriter::CodeWriter (const std::filesystem::path path, AssemblyMap asmMap)
-: path (path), asmMap (asmMap), file (path), line (-1) {
+: path (path), asmMap (asmMap), file (path), line (-1), has_initialized (false) {
 }
 void CodeWriter::setParser (Parser newParser) {
     parser    = newParser;
@@ -12,13 +13,15 @@ void CodeWriter::setParser (Parser newParser) {
 }
 
 void CodeWriter::write () {
-
+    if (!has_initialized) {
+        has_initialized = true;
+        writeInit ();
+    }
     while (parser.hasMoreCommands ()) {
         std::string instruction = parser.advance ();
 
         file << "// " << instruction << ", line " << ++line << std::endl;
 
-        // TODO: Continue Building The remaining options
         auto command_type = parser.getCommandType ();
         switch (command_type) {
         case commandType::C_ARITHMETIC: writeArithmetic (); break;
@@ -27,7 +30,9 @@ void CodeWriter::write () {
         case commandType::C_LABEL: writeLabel (); break;
         case commandType::C_IF: writeIfGoto (); break;
         case commandType::C_GOTO: writeIfGoto (); break;
-        default: throw Error ("CodeWriter::write: Invalid Command Type");
+        case commandType::C_FUNCTION: writeFunction (); break;
+        case commandType::C_RETURN: writeReturn (); break;
+        case commandType::C_CALL: writeCall (); break;
         }
     }
 }
@@ -104,16 +109,22 @@ void CodeWriter::writePop () {
         throw Error ("CodeWriter::writePop: Cannot pop constant at line " +
         std::to_string (line));
         break;
-        ;
     case segment::STATIC:
         writeFormatted ("push_static", file_name + "." + std::to_string (parser.arg2 ()));
         break;
     }
 }
 
-void CodeWriter::writeFormatted (std::string asmKey, std::string arg) {
+template <typename... Args>
+void CodeWriter::writeFormatted (const std::string& asmKey, Args&&... args) {
     const std::string command = asmMap.get_command (asmKey);
-    file << std::vformat (command, std::make_format_args (arg));
+    file << std::vformat (command, std::make_format_args (std::forward<Args> (args)...));
+}
+
+
+void CodeWriter::writeFormatted (const std::string& asmKey, std::string args) {
+    const std::string command = asmMap.get_command (asmKey);
+    file << std::vformat (command, std::make_format_args (args));
 }
 void CodeWriter::writeLabel () {
     writeFormatted ("label", parser.arg1 ());
@@ -128,4 +139,26 @@ void CodeWriter::writeIfGoto () {
 
 void CodeWriter::close () {
     file.close ();
+}
+
+void CodeWriter::writeInit () {
+    file << asmMap.get_command ("init");
+}
+
+void CodeWriter::writeCall () {
+    std::string return_address =
+    current_function_name + "$ret" + std::to_string (call_count++);
+    std::string n = std::to_string (parser.arg2 ());
+    writeFormatted ("call", return_address, n, current_function_name);
+}
+
+void CodeWriter::writeFunction () {
+    current_function_name = parser.arg1 ();
+    call_count            = 0;
+    std::string arg1      = std::to_string (parser.arg2 ());
+    writeFormatted ("function", arg1, current_function_name);
+}
+
+void CodeWriter::writeReturn () {
+    writeFormatted ("return");
 }
