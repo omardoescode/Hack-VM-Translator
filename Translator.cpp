@@ -23,6 +23,9 @@ void Translator::translate_file () {
     std::filesystem::path out_path = out_files, in_path = inp_files;
     CodeWriter codeWriter (out_path, asmMap);
 
+    auto path = in_path.stem ().string ();
+    if (path.substr (path.find_last_of (".") + 1) != "vm")
+        throw Error ("Translator::translate_file:  File is not of type .vm");
     Parser parser (inp_files);
     codeWriter.setParser (parser);
     codeWriter.write ();
