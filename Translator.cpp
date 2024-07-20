@@ -34,6 +34,10 @@ void Translator::translate_files () {
     CodeWriter codeWriter (out_path, asmMap);
 
     for (const auto& entry : std::filesystem::recursive_directory_iterator (inp_files)) {
+        auto path = entry.path ().stem ().string ();
+        if (path.substr (path.find_last_of (".") + 1) != "vm")
+            continue;
+
         Parser parser (entry);
         codeWriter.setParser (parser);
         codeWriter.write ();
